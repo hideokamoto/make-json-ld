@@ -36,43 +36,76 @@ function ejls_is_last ($the_query) {
     return ($the_query->current_post+1 === $the_query->post_count);
 }
 
+
 function ejls_get_content () {
     $contextUrl = get_home_url() . "/jsonld-context/";
     $postUrl = get_permalink();
-    $imageUrl = get_the_thumbnail();
-    $description = get_the_content();
+
     $containedIn = get_post_meta( get_the_ID(), 'field_page_1', true );
-    $locality = get_post_meta( get_the_ID(), 'field_page_2', true );
-    $address = get_post_meta( get_the_ID(), 'field_page_3', true );
-    $url = get_post_meta( get_the_ID(), 'field_page_4', true );
-    $facebook = get_post_meta( get_the_ID(), 'field_page_5', true );
-    $twitter = get_post_meta( get_the_ID(), 'field_page_6', true );
-    $name = get_post_meta( get_the_ID(), 'field_page_7', true );
-    $parking = get_post_meta( get_the_ID(), 'field_page_8', true );
-    $price = get_post_meta( get_the_ID(), 'field_page_9', true );
-    $telephone = get_post_meta( get_the_ID(), 'field_page_10', true );
+    $locality    = get_post_meta( get_the_ID(), 'field_page_2', true );
+    $address     = get_post_meta( get_the_ID(), 'field_page_3', true );
+    $url         = get_post_meta( get_the_ID(), 'field_page_4', true );
+    $facebook    = get_post_meta( get_the_ID(), 'field_page_5', true );
+    $twitter     = get_post_meta( get_the_ID(), 'field_page_6', true );
+    $name        = get_post_meta( get_the_ID(), 'field_page_7', true );
+    $parking     = get_post_meta( get_the_ID(), 'field_page_8', true );
+    $price       = get_post_meta( get_the_ID(), 'field_page_9', true );
+    $telephone   = get_post_meta( get_the_ID(), 'field_page_10', true );
     $openingHour = get_post_meta( get_the_ID(), 'field_page_11', true );
-    $closed = get_post_meta( get_the_ID(), 'field_page_12', true );
-    $jsonldContent = '
-    {
-        "@context": "'. $contextUrl. '", 
-        "@id"   : "'. $postUrl .'",
-        "schema:image": "'. $imageUrl.' ",
-        "schema:name": "'. $name .'",
-        "schema:description": "'. $description .'",
-        "schema:address": "'. $address .'",
-        "yafjp:locality": "'. $locality.'",
-        "schema:url": "'.$url. '",
-        "schema:containedIn": "'.$containedIn.'",
-        "schema:openingHour" : "'. $openingHour .'",
-        "yafjp:closed" : "'. $closed.'",
-        "yafjp:parking": "'. $parking.'",
-        "schema:sameAs"        : ["'.$facebook.'","'.$twitter.'"],
-        "schema:price"         :"'. $price.'",
-        "schema:telephone"     :"'.$telephone.'"
-    }';
-    return $jsonldContent;
+    $closed      = get_post_meta( get_the_ID(), 'field_page_12', true );
+
+    $contentArr = array(
+        "@context" => "{$contextUrl}",
+        "@id"  => "{$postUrl}",
+        );
+    if (has_post_thumbnail()) {
+        $contentArr['schema:image'] = wp_get_attachment_url(get_post_thumbnail_id());
+    }
+    if (get_the_content()) {
+        $contentArr['schema:description'] = get_the_content();
+    }
+    if ($containedIn) {
+        $contentArr["schema:containedIn"] = $containedIn;
+    }
+    if ($locality) {
+        $contentArr["yafjp:locality"] = $locality;
+    }
+    if ($address) {
+        $contentArr["schema:address"] = $address;
+    }
+    if ($url) {
+        $contentArr["schema:url"] = $url;
+    }
+    if ($facebook) {
+        $contentArr["schema:sameAs"][] = $facebook;
+    }
+    if ($twitter) {
+        $contentArr["schema:sameAs"][] = $twitter;
+    }
+    if ($name) {
+        $contentArr["schema:name"] = $name;
+    }
+    if ($parking) {
+        $contentArr["yafjp:parking"] = $parking;
+    }
+    if ($price) {
+        $contentArr["schema:price"] = $price;
+    }
+    if ($telephone) {
+        $contentArr["schema:telephone"] = $telephone;
+    }
+    if ($openingHour) {
+        $contentArr["schema:openingHour"] = $openingHour;
+    }
+    if ($closed) {
+        $contentArr["yafjp:closed"] = $closed;
+    }
+
+    $json = json_encode($contentArr, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+    return $json;
 }
+
+
 
 function ejls_get_article () {
     if (is_page() || is_single()) {
@@ -89,14 +122,14 @@ function ejls_get_article () {
 
 register_activation_hook( __FILE__ , 'ejls_activation_callback');
 function ejls_activation_callback() {
-    add_rewrite_endpoint( 'json', EP_PERMALINK|EP_ROOT );
+    add_rewrite_endpoint( 'json', EP_PERMALINK|EP_ROOT|EP_PAGES );
     add_rewrite_endpoint( 'jsonld-context', EP_ROOT );
     flush_rewrite_rules();
 }
 
 add_action( 'init', 'ejls_init');
 function ejls_init() {
-    add_rewrite_endpoint('json',EP_PERMALINK|EP_ROOT );
+    add_rewrite_endpoint('json',EP_PERMALINK|EP_ROOT|EP_PAGES );
     add_rewrite_endpoint( 'jsonld-context', EP_ROOT );
 }
 
@@ -124,7 +157,7 @@ function ejls_template_redirect() {
     if( isset( $wp_query->query['jsonld-context']) ) {
         if( ! $wp_query->query['jsonld-context'] ){
             header( 'Content-type: application/ld+json; charset=UTF-8');
-	    	header("Access-Control-Allow-Origin: *");
+            header("Access-Control-Allow-Origin: *");
             $context = ejls_get_context();
             echo $context;
             exit;
