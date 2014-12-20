@@ -30,9 +30,11 @@ function ejls_get_archive ($max_no) {
         return $jsonld;
     }
 }
+
 function ejls_is_last ($the_query) {
     return ($the_query->current_post+1 === $the_query->post_count);
 }
+
 function ejls_get_content () {
     $contextUrl = get_home_url() . "/jsonld-context/";
     $postUrl = get_permalink();
@@ -44,11 +46,11 @@ function ejls_get_content () {
         "@id"  => "{$postUrl}",
         );
     foreach($customFields as $key => $value){
-    if(substr($key,0,1) === '_'){
-        continue;
-    } elseif (substr($key,0,6) === 'schema'){
-        $contentArr[$key] = $value[0];
-    }
+        if(substr($key,0,1) === '_'){
+            continue;
+        } elseif (ejls_is_opendata ($key)){
+            $contentArr[$key] = $value[0];
+        }
     }
     $json = json_encode($contentArr, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     return $json;
@@ -66,22 +68,34 @@ function ejls_get_article () {
 }
 register_activation_hook( __FILE__ , 'ejls_activation_callback');
 function ejls_activation_callback() {
-    add_rewrite_endpoint( 'json', EP_PERMALINK|EP_ROOT|EP_PAGES );
+    add_rewrite_endpoint( 'json', EP_PERMALINK|EP_ROOT|EP_PAGES);
     add_rewrite_endpoint( 'jsonld-context', EP_ROOT );
     flush_rewrite_rules();
 }
+
+function ejls_is_opendata ($key) {
+    if (
+        substr($key,0,6) === 'schema' ||
+        substr($key,0,5) === 'yafjp'
+    ) {
+        return true;
+    }
+    return false;
+}
+
 add_action( 'init', 'ejls_init');
 function ejls_init() {
-    add_rewrite_endpoint('json',EP_PERMALINK|EP_ROOT|EP_PAGES );
-    add_rewrite_endpoint( 'jsonld-context', EP_ROOT );
+    add_rewrite_endpoint('json',EP_PERMALINK|EP_ROOT|EP_PAGES);
+    add_rewrite_endpoint('jsonld-context', EP_ROOT);
 }
+
 add_action('template_redirect', 'ejls_template_redirect');
 function ejls_template_redirect() {
     header("Access-Control-Allow-Origin: *");
     global $wp_query;
     if( isset( $wp_query->query['json']) ) {
         if( ! $wp_query->query['json'] ){
-            header( 'Content-type: application/ld+json; charset=UTF-8');
+            header('Content-type: application/ld+json; charset=UTF-8');
             if (is_home()){
                 $max_no = $_GET['max'];
                 $jsonld = ejls_get_archive($max_no);
@@ -92,13 +106,13 @@ function ejls_template_redirect() {
             exit;
         } else {
             $wp_query->set_404();
-            status_header( 404);
+            status_header(404);
             return;
         }
     }
-    if( isset( $wp_query->query['jsonld-context']) ) {
-        if( ! $wp_query->query['jsonld-context'] ){
-            header( 'Content-type: application/ld+json; charset=UTF-8');
+    if( isset($wp_query->query['jsonld-context'])) {
+        if(!$wp_query->query['jsonld-context']) {
+            header('Content-type: application/ld+json; charset=UTF-8');
             $context = ejls_get_context();
             echo $context;
             exit;
@@ -109,11 +123,11 @@ function ejls_template_redirect() {
         }
     }
 }
-function ejls_get_context(){
+function ejls_get_context() {
     $context = '{
     "@context": {
-        "schema": "http://schema.org/",
-        "yafjp": "http://fp.yafjp.org/terms/place#"
+        "schema" : "http://schema.org/",
+        "yafjp"  : "http://fp.yafjp.org/terms/place#"
     }
 }';
     return $context;
