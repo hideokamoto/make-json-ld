@@ -40,19 +40,20 @@ function ejls_is_last ($the_query) {
 function ejls_get_content () {
     $contextUrl = get_home_url() . "/jsonld-context/";
     $postUrl = get_permalink();
+    $postId = get_the_ID();
 
-    $containedIn = get_post_meta( get_the_ID(), 'field_page_1', true );
-    $locality    = get_post_meta( get_the_ID(), 'field_page_2', true );
-    $address     = get_post_meta( get_the_ID(), 'field_page_3', true );
-    $url         = get_post_meta( get_the_ID(), 'field_page_4', true );
-    $facebook    = get_post_meta( get_the_ID(), 'field_page_5', true );
-    $twitter     = get_post_meta( get_the_ID(), 'field_page_6', true );
-    $name        = get_post_meta( get_the_ID(), 'field_page_7', true );
-    $parking     = get_post_meta( get_the_ID(), 'field_page_8', true );
-    $price       = get_post_meta( get_the_ID(), 'field_page_9', true );
-    $telephone   = get_post_meta( get_the_ID(), 'field_page_10', true );
-    $openingHour = get_post_meta( get_the_ID(), 'field_page_11', true );
-    $closed      = get_post_meta( get_the_ID(), 'field_page_12', true );
+    $containedIn = get_post_meta( $postId, 'field_page_1', true );
+    $locality    = get_post_meta( $postId, 'field_page_2', true );
+    $address     = get_post_meta( $postId, 'field_page_3', true );
+    $url         = get_post_meta( $postId, 'field_page_4', true );
+    $facebook    = get_post_meta( $postId, 'field_page_5', true );
+    $twitter     = get_post_meta( $postId, 'field_page_6', true );
+    $name        = get_post_meta( $postId, 'field_page_7', true );
+    $parking     = get_post_meta( $postId, 'field_page_8', true );
+    $price       = get_post_meta( $postId, 'field_page_9', true );
+    $telephone   = get_post_meta( $postId, 'field_page_10', true );
+    $openingHour = get_post_meta( $postId, 'field_page_11', true );
+    $closed      = get_post_meta( $postId, 'field_page_12', true );
 
     $contentArr = array(
         "@context" => "{$contextUrl}",
@@ -135,6 +136,7 @@ function ejls_init() {
 
 add_action('template_redirect', 'ejls_template_redirect');
 function ejls_template_redirect() {
+    header("Access-Control-Allow-Origin: *");
     global $wp_query;
 
     if( isset( $wp_query->query['json']) ) {
@@ -157,7 +159,6 @@ function ejls_template_redirect() {
     if( isset( $wp_query->query['jsonld-context']) ) {
         if( ! $wp_query->query['jsonld-context'] ){
             header( 'Content-type: application/ld+json; charset=UTF-8');
-            header("Access-Control-Allow-Origin: *");
             $context = ejls_get_context();
             echo $context;
             exit;
