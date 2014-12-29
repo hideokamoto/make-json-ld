@@ -75,7 +75,17 @@ function ejls_activation_callback() {
 
 function ejls_is_opendata ($key) {
     if (
+        substr($key,0,3) === 'rdf'    ||
+        substr($key,0,4) === 'rdfs'   ||
+        substr($key,0,5) === 'vCard'  ||
+        substr($key,0,4) === 'foaf'   ||
+        substr($key,0,2) === 'dc'     ||
+        substr($key,0,7) === 'dcterms'||
+        substr($key,0,3) === 'cal'    ||
+        substr($key,0,3) === 'geo'    ||
+        substr($key,0,3) === 'owl'    ||
         substr($key,0,6) === 'schema' ||
+        substr($key,0,4) === 'skos'   ||
         substr($key,0,5) === 'yafjp'
     ) {
         return true;
@@ -126,7 +136,17 @@ function ejls_template_redirect() {
 function ejls_get_context() {
     $context = '{
     "@context": {
+        "rdf"    : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs"   : "http://www.w3.org/2000/01/rdf-schema#",
+        "vCard"  : "http://www.w3.org/2006/vcard/ns#",
+        "foaf"   : "http://xmlns.com/foaf/0.1/",
+        "dc"     : "http://purl.org/dc/elements/1.1/",
+        "dcterms": "http://purl.org/dc/terms/",
+        "cal"    : "http://www.w3.org/2002/12/cal/icaltzd#",
+        "geo"    : "http://www.w3.org/2003/01/geo/wgs84_pos#",
+        "owl"    : "ttp://www.w3.org/2002/07/owl#",
         "schema" : "http://schema.org/",
+        "skos"   : "http://www.w3.org/2004/02/skos/core#",
         "yafjp"  : "http://fp.yafjp.org/terms/place#"
     }
 }';
