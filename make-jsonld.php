@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Make Json LD TEST
- * @version 1.0
+ * @version 1.1
  */
 /*
 Plugin Name: Make Json LD TEST
@@ -13,20 +13,18 @@ Author URI: http://wp-kyoto.net/
 */
 function ejls_get_archive ($max_no) {
     if (is_home()){
-        $jsonld = '[';
-            $mainContents = array(
-                'post_type' =>'post',
-                'posts_per_page' => $max_no,
-                'paged' => $paged
-            );
-            $the_query = new WP_Query( $mainContents );
-            while ( $the_query->have_posts() ) : $the_query->the_post();
-                $jsonld .= ejls_get_content();
-                if (!ejls_is_last($the_query)){
-                    $jsonld .= ',';
-                }
-            endwhile;
-        $jsonld .=']';
+        $mainContents = array(
+            'post_type' =>'post',
+            'posts_per_page' => $max_no,
+            'paged' => $paged
+        );
+        $the_query = new WP_Query( $mainContents );
+        while ( $the_query->have_posts() ) : $the_query->the_post();
+            $content = ejls_get_content();
+            if(!$content){ continue; }
+            $jsonld[] = $content;
+        endwhile;
+        $jsonld = json_encode($jsonld, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         return $jsonld;
     }
 }
@@ -41,7 +39,7 @@ function ejls_get_content () {
     $postId = get_the_ID();
     $customFields = get_post_meta($postId);
 
-    $contentArr = array(
+    $context = array(
         "@context" => "{$contextUrl}",
         "@id"  => "{$postUrl}",
         );
@@ -49,20 +47,23 @@ function ejls_get_content () {
         if(substr($key,0,1) === '_'){
             continue;
         } elseif (ejls_is_opendata ($key)){
-            $contentArr[$key] = $value[0];
+            $content[$key] = $value[0];
         }
     }
-    $json = json_encode($contentArr, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+    if ($content) {
+        $json = array_merge_recursive($context, $content);
+    } else {
+        $json = null;
+    }
     return $json;
 }
 function ejls_get_article () {
     if (is_page() || is_single()) {
-        $jsonld = '[';
         if (have_posts()) : while (have_posts()) : the_post();
-            $jsonld .= ejls_get_content();
+            $jsonld[] = ejls_get_content();
         endwhile; endif;
-        $jsonld .=']';
         rewind_posts();
+        $jsonld = json_encode($jsonld, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         return $jsonld;
     }
 }
@@ -105,15 +106,21 @@ function ejls_template_redirect() {
     global $wp_query;
     if( isset( $wp_query->query['json']) ) {
         if( ! $wp_query->query['json'] ){
-            header('Content-type: application/ld+json; charset=UTF-8');
             if (is_home()){
                 $max_no = $_GET['max'];
                 $jsonld = ejls_get_archive($max_no);
             } elseif (is_single() || is_page()){
                 $jsonld = ejls_get_article();
             }
-            echo $jsonld;
-            exit;
+            if ($jsonld == '[null]') {
+                $wp_query->set_404();
+                status_header(404);
+                return;
+            } else {
+                header('Content-type: application/ld+json; charset=UTF-8');
+                echo $jsonld;
+                exit;
+            }
         } else {
             $wp_query->set_404();
             status_header(404);
