@@ -28,15 +28,32 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h3>
-<a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h3>
+          <h1>
+<a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h1>
 
 <p>カスタムフィールドのデータをJSON-LD形式で出力するプラグインです。</p>
 
 <p>カスタムフィールド名を「schema:name」のような形式にすることで、簡単にJSON-LD化されたデータをみることができます。</p>
 
-<h3>
-<a id="使用できる語彙" class="anchor" href="#%E4%BD%BF%E7%94%A8%E3%81%A7%E3%81%8D%E3%82%8B%E8%AA%9E%E5%BD%99" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用できる語彙</h3>
+<h1>
+<a id="仕様" class="anchor" href="#%E4%BB%95%E6%A7%98" aria-hidden="true"><span class="octicon octicon-link"></span></a>仕様</h1>
+
+<ul>
+<li>管理画面から登録できる語彙は１つのみ</li>
+<li>語彙を登録した場合、その語彙しか使えない</li>
+<li>管理画面から登録された語彙が無い場合、デフォルトの語彙が出力される</li>
+<li>/jsonld-context/に表示されるURLがエンコードされて表示されるが動作に問題はない</li>
+<li>語彙１つだけの時は「:(CompactIRIs)」を使わずに定義する。<br>
+
+<ul>
+<li>語彙１つの時→「 "name" : "YourName"」</li>
+<li>語彙複数の時→「"schema:name" : "YourName"」</li>
+</ul>
+</li>
+</ul>
+
+<h2>
+<a id="デフォルトで使用できる語彙" class="anchor" href="#%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E3%81%A7%E4%BD%BF%E7%94%A8%E3%81%A7%E3%81%8D%E3%82%8B%E8%AA%9E%E5%BD%99" aria-hidden="true"><span class="octicon octicon-link"></span></a>デフォルトで使用できる語彙</h2>
 
 <ul>
 <li>"rdf"    : "<a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#">http://www.w3.org/1999/02/22-rdf-syntax-ns#</a>",</li>
@@ -55,12 +72,43 @@
 
 <p>*それぞれの語彙については(<a href="http://fp.yafjp.org/yokohama_art_lod/place_rdf)%5Bhttp://fp.yafjp.org/yokohama_art_lod/place_rdf%5D%E3%82%92%E5%8F%82%E7%85%A7%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82">http://fp.yafjp.org/yokohama_art_lod/place_rdf)[http://fp.yafjp.org/yokohama_art_lod/place_rdf]を参照してください。</a></p>
 
-<h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<h1>
+<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h1>
 
 <p>まだ試作品状態ですので、使用中に感じた不具合や不便な点などがあれば「issue」への追加をお願いします。</p>
 
 <p>修正パッチを送っていただけると作者は非常に喜びます。</p>
+
+<h1>
+<a id="update-memo" class="anchor" href="#update-memo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update Memo</h1>
+
+<h2>
+<a id="20150117" class="anchor" href="#20150117" aria-hidden="true"><span class="octicon octicon-link"></span></a>2015/01/17</h2>
+
+<ul>
+<li>管理画面に語彙登録画面を追加</li>
+<li>語彙の保存処理を実装</li>
+<li>語彙をcontextファイルに反映</li>
+</ul>
+
+<h1>
+<a id="ぼやき" class="anchor" href="#%E3%81%BC%E3%82%84%E3%81%8D" aria-hidden="true"><span class="octicon octicon-link"></span></a>ぼやき</h1>
+
+<ul>
+<li>語彙１つしか登録できないとかありえない</li>
+<li>そろそろ使い方をまとめないとわかりにくい</li>
+<li>AdvanceCustomField依存なのを明示したい</li>
+</ul>
+
+<h1>
+<a id="今後" class="anchor" href="#%E4%BB%8A%E5%BE%8C" aria-hidden="true"><span class="octicon octicon-link"></span></a>今後</h1>
+
+<ul>
+<li>語彙を複数登録できるようにする</li>
+<li>
+<a href="https://github.com/type" class="user-mention">@type</a>をサポート</li>
+<li>派生系でGoogleの構造化データ（schema.org）をサポートしたい</li>
+</ul>
         </section>
 
         <aside id="sidebar">
