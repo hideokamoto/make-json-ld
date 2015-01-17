@@ -1,14 +1,14 @@
 <?php
 /**
- * @package Make Json LD TEST
- * @version 1.1
+ * @package Make JSON LD
+ * @version 1.2
  */
 /*
-Plugin Name: Make Json LD TEST
-Plugin URI: http://wordpress.org/plugins/test-use-sparql-for-saigoku-33/
-Description: This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong: Hello, Dolly. When activated you will randomly see a lyric from <cite>Hello, Dolly</cite> in the upper right of your admin screen on every page.
+Plugin Name: Make JSON LD
+Plugin URI: http://hideokamoto.github.io/make-json-ld/
+Description: This Plugin can make JSON-LD for Linked Open Data.Using Advanced CustomField Plugin.
 Author: Hidetaka Okamoto
-Version: 1.0
+Version: 1.2
 Author URI: http://wp-kyoto.net/
 */
 function ejls_get_archive ($max_no) {
@@ -141,21 +141,113 @@ function ejls_template_redirect() {
     }
 }
 function ejls_get_context() {
-    $context = '{
-    "@context": {
-        "rdf"    : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-        "rdfs"   : "http://www.w3.org/2000/01/rdf-schema#",
-        "vCard"  : "http://www.w3.org/2006/vcard/ns#",
-        "foaf"   : "http://xmlns.com/foaf/0.1/",
-        "dc"     : "http://purl.org/dc/elements/1.1/",
-        "dcterms": "http://purl.org/dc/terms/",
-        "cal"    : "http://www.w3.org/2002/12/cal/icaltzd#",
-        "geo"    : "http://www.w3.org/2003/01/geo/wgs84_pos#",
-        "owl"    : "ttp://www.w3.org/2002/07/owl#",
-        "schema" : "http://schema.org/",
-        "skos"   : "http://www.w3.org/2004/02/skos/core#",
-        "yafjp"  : "http://fp.yafjp.org/terms/place#"
+    /*
+     * @TODO 配列で取得できるようにする
+     */
+    $contextData;
+    if (get_option('context')) {
+        $contextData[0]['vocabulary'] = esc_attr(get_option('context'));
     }
-}';
+    if (get_option('iri')) {
+        $contextData[0]['iri']        = esc_url(get_option('iri'));
+    }
+
+    switch (count($contextData)) {
+        case 0:
+            $context['@context'] = array(
+                "rdf"    => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "rdfs"   => "http://www.w3.org/2000/01/rdf-schema#",
+                "vCard"  => "http://www.w3.org/2006/vcard/ns#",
+                "foaf"   => "http://xmlns.com/foaf/0.1/",
+                "dc"     => "http://purl.org/dc/elements/1.1/",
+                "dcterms"=> "http://purl.org/dc/terms/",
+                "cal"    => "http://www.w3.org/2002/12/cal/icaltzd#",
+                "geo"    => "http://www.w3.org/2003/01/geo/wgs84_pos#",
+                "owl"    => "http://www.w3.org/2002/07/owl#",
+                "schema" => "http://schema.org/",
+                "skos"   => "http://www.w3.org/2004/02/skos/core#",
+                "yafjp"  => "http://fp.yafjp.org/terms/place#",
+                );
+            break;
+        
+        case 1:
+            $context['@context'] = $contextData[0]['iri'];
+            break;
+
+        default:
+            foreach ($contextData as $key => $value) {
+                $contextArray = array(
+                    $value['vocabulary'] => $value['iri']
+                );
+            }
+            $context["@context"] = $contextArray;
+            break;
+    }
+    $context = json_encode($context);
     return $context;
+}
+
+add_action( 'admin_menu', 'ejls_setting_menu' );
+function ejls_setting_menu(){
+    add_menu_page(
+        __('Make JSON-LD', 'ejls-admin-menu'),
+        __('Make JSON-LD', 'ejls-admin-menu'),
+        'administrator',
+        'ejls-admin-menu',
+        'ejls_admin_menu'
+    );
+}
+
+function ejls_admin_menu(){
+$twitter_account = 'hoge';
+?>
+<div class="wrap">
+    <h2>Make JSON-LD</h2>
+    <h3>Setting Vocabulary</h3>
+    <p>ここで使用する語彙を登録します。</p>
+<form method="post" action="" novalidate="novalidate">
+<?php wp_nonce_field( 'my-nonce-key', 'ejls-admin-menu');?>
+<table class="widefat form-table">
+<thead>
+<tr><th>　Vocabulary Name</th><th>URI</th></tr>
+</thead>
+<tbody>
+<tr>
+    <td><input name="context" type="text" id="vocabulary" value="<?php echo esc_attr(get_option('context'));?>" class="regular-text code"></td>
+    <td><input name="iri" type="url" id="siteurl" value="<?php echo esc_url(get_option('iri'));?>" class="regular-text code"></td>
+</tr>
+</tbody></table>
+<p class="submit"><input type="submit" class="button button-primary" value="変更を保存"></p>
+</form>
+</div>
+<?php
+}
+
+add_action( 'admin_init', 'ejls_admin_init');
+function ejls_admin_init()
+{
+    if( isset ( $_POST['ejls-admin-menu']) && $_POST['ejls-admin-menu'] ){
+        if( check_admin_referer('my-nonce-key', 'ejls-admin-menu')) {
+            $e = new WP_Error();
+                update_option('context', trim($_POST['context']));
+                update_option('iri', trim($_POST['iri']));
+        } else {
+            update_option('context', '');
+        }
+        wp_safe_redirect(menu_page_url('ejls-admin-menu', false));    
+    }
+}
+
+add_action('admin_notices', 'ejls_admin_notices');
+function ejls_admin_notices(){
+    ?>
+    <?php if($messages = get_transient('ejls-admin-errors')):?>
+        <div class="updated">
+            <ul>
+                <?php foreach( $messages as $message):?>
+                    <li><?php echo esc_html($message);?></li>
+                <?php endforeach;?>
+            </ul>
+        </div>
+        <?php endif;
 }
