@@ -11,7 +11,7 @@ Author: Hidetaka Okamoto
 Version: 1.2
 Author URI: http://wp-kyoto.net/
 */
-function ejls_get_archive ($max_no) {
+function ejls_get_archive ($max_no, $contextType) {
     if (is_home()){
         $mainContents = array(
             'post_type' =>'post',
@@ -20,7 +20,7 @@ function ejls_get_archive ($max_no) {
         );
         $the_query = new WP_Query( $mainContents );
         while ( $the_query->have_posts() ) : $the_query->the_post();
-            $content = ejls_get_content();
+            $content = ejls_get_content($contextType);
             if(!$content){ continue; }
             $jsonld[] = $content;
         endwhile;
@@ -33,7 +33,7 @@ function ejls_is_last ($the_query) {
     return ($the_query->current_post+1 === $the_query->post_count);
 }
 
-function ejls_get_content () {
+function ejls_get_content ($contextType) {
     $contextUrl = get_home_url() . "/jsonld-context/";
     $postUrl = get_permalink();
     $postId = get_the_ID();
@@ -43,13 +43,22 @@ function ejls_get_content () {
         "@context" => "{$contextUrl}",
         "@id"  => "{$postUrl}",
         );
-    foreach($customFields as $key => $value){
-        if(substr($key,0,1) === '_'){
-            continue;
-        } elseif (ejls_is_opendata ($key)){
-            $content[$key] = $value[0];
+
+    $customFieldKeys = array_keys($customFields);
+    $matchedContext = array();
+    foreach ($contextType as $contexts) {
+        if (preg_grep("/^{$contexts}/", $customFieldKeys)) {
+            $matchedContext = array_merge($matchedContext, preg_grep("/^{$contexts}/", $customFieldKeys));
         }
     }
+    if ($matchedContext) {
+        foreach ($matchedContext as $k => $v) {
+            $content[$v] = $customFields[$v];
+        }
+    } else {
+        return null;
+    }
+
     if ($content) {
         $json = array_merge_recursive($context, $content);
     } else {
@@ -57,10 +66,10 @@ function ejls_get_content () {
     }
     return $json;
 }
-function ejls_get_article () {
+function ejls_get_article ($contextType) {
     if (is_page() || is_single()) {
         if (have_posts()) : while (have_posts()) : the_post();
-            $jsonld[] = ejls_get_content();
+            $jsonld[] = ejls_get_content($contextType);
         endwhile; endif;
         rewind_posts();
         $jsonld = json_encode($jsonld, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
@@ -74,26 +83,6 @@ function ejls_activation_callback() {
     flush_rewrite_rules();
 }
 
-function ejls_is_opendata ($key) {
-    if (
-        substr($key,0,3) === 'rdf'    ||
-        substr($key,0,4) === 'rdfs'   ||
-        substr($key,0,5) === 'vCard'  ||
-        substr($key,0,4) === 'foaf'   ||
-        substr($key,0,2) === 'dc'     ||
-        substr($key,0,7) === 'dcterms'||
-        substr($key,0,3) === 'cal'    ||
-        substr($key,0,3) === 'geo'    ||
-        substr($key,0,3) === 'owl'    ||
-        substr($key,0,6) === 'schema' ||
-        substr($key,0,4) === 'skos'   ||
-        substr($key,0,5) === 'yafjp'
-    ) {
-        return true;
-    }
-    return false;
-}
-
 add_action( 'init', 'ejls_init');
 function ejls_init() {
     add_rewrite_endpoint('json',EP_PERMALINK|EP_ROOT|EP_PAGES);
@@ -105,12 +94,23 @@ function ejls_template_redirect() {
     header("Access-Control-Allow-Origin: *");
     global $wp_query;
     if( isset( $wp_query->query['json']) ) {
-        if( ! $wp_query->query['json'] ){
+        if( !$wp_query->query['json']){
+
+            if (get_option('context')) {
+                $contextData = get_option('context');
+                //want to use array_column
+                foreach ($contextData as $key => $context) {
+                    $contextType[] = $context['type'];
+                }
+            } else {
+                $contextType[] = 'schema';
+            }
+
             if (is_home()){
                 $max_no = $_GET['max'];
-                $jsonld = ejls_get_archive($max_no);
+                $jsonld = ejls_get_archive($max_no, $contextType);
             } elseif (is_single() || is_page()){
-                $jsonld = ejls_get_article();
+                $jsonld = ejls_get_article($contextType);
             }
             if ($jsonld == '[null]') {
                 $wp_query->set_404();
@@ -141,43 +141,26 @@ function ejls_template_redirect() {
     }
 }
 function ejls_get_context() {
-    /*
-     * @TODO 配列で取得できるようにする
-     */
     $contextData;
     if (get_option('context')) {
-        $contextData[0]['vocabulary'] = esc_attr(get_option('context'));
-    }
-    if (get_option('iri')) {
-        $contextData[0]['iri']        = esc_url(get_option('iri'));
+        $contextData        = get_option('context');
     }
 
     switch (count($contextData)) {
         case 0:
             $context['@context'] = array(
-                "rdf"    => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-                "rdfs"   => "http://www.w3.org/2000/01/rdf-schema#",
-                "vCard"  => "http://www.w3.org/2006/vcard/ns#",
-                "foaf"   => "http://xmlns.com/foaf/0.1/",
-                "dc"     => "http://purl.org/dc/elements/1.1/",
-                "dcterms"=> "http://purl.org/dc/terms/",
-                "cal"    => "http://www.w3.org/2002/12/cal/icaltzd#",
-                "geo"    => "http://www.w3.org/2003/01/geo/wgs84_pos#",
-                "owl"    => "http://www.w3.org/2002/07/owl#",
-                "schema" => "http://schema.org/",
-                "skos"   => "http://www.w3.org/2004/02/skos/core#",
-                "yafjp"  => "http://fp.yafjp.org/terms/place#",
+                "schema" => "http://schema.org/"
                 );
             break;
         
         case 1:
-            $context['@context'] = $contextData[0]['iri'];
+            $context['@context'] = esc_url($contextData[0]['iri']);
             break;
 
         default:
             foreach ($contextData as $key => $value) {
-                $contextArray = array(
-                    $value['vocabulary'] => $value['iri']
+                $contextArray[] = array(
+                    esc_attr($value['type']) => esc_url($value['iri'])
                 );
             }
             $context["@context"] = $contextArray;
@@ -199,24 +182,45 @@ function ejls_setting_menu(){
 }
 
 function ejls_admin_menu(){
-$twitter_account = 'hoge';
 ?>
 <div class="wrap">
     <h2>Make JSON-LD</h2>
     <h3>Setting Vocabulary</h3>
     <p>ここで使用する語彙を登録します。</p>
+
 <form method="post" action="" novalidate="novalidate">
 <?php wp_nonce_field( 'my-nonce-key', 'ejls-admin-menu');?>
 <table class="widefat form-table">
-<thead>
-<tr><th>　Vocabulary Name</th><th>URI</th></tr>
-</thead>
-<tbody>
-<tr>
-    <td><input name="context" type="text" id="vocabulary" value="<?php echo esc_attr(get_option('context'));?>" class="regular-text code"></td>
-    <td><input name="iri" type="url" id="siteurl" value="<?php echo esc_url(get_option('iri'));?>" class="regular-text code"></td>
-</tr>
-</tbody></table>
+    <thead>
+        <tr><th>　Vocabulary Name</th><th>URI</th></tr>
+    </thead>
+    <tbody>
+        <?php
+        $contextArr = get_option('context');
+        $i = 0;
+        if (!$contextArr) :
+            $contextArr[0] = array(
+                "type" =>"schema",
+                "iri"  =>"http://schema.org/"
+            );
+        endif;
+
+        foreach($contextArr as  $context):
+            if ($context['type']) :?>
+            <tr>
+                <td><input name="context[<?php echo $i;?>][type]" type="text" id="vocabulary" value="<?php echo esc_attr($context['type']);?>" class="regular-text code"></td>
+                <td><input name="context[<?php echo $i;?>][iri]" type="url" id="siteurl" value="<?php echo esc_url($context['iri']);?>" class="regular-text code"></td>
+            </tr>
+            <?php
+            $i++;
+            endif;
+        endforeach;?>
+        <tr>
+            <td><input name="context[<?php echo $i;?>][type]" type="text" id="vocabulary" value="" class="regular-text code"></td>
+            <td><input name="context[<?php echo $i;?>][iri]" type="url" id="siteurl" value="" class="regular-text code"></td>
+        </tr>
+    </tbody>
+</table>
 <p class="submit"><input type="submit" class="button button-primary" value="変更を保存"></p>
 </form>
 </div>
@@ -229,13 +233,29 @@ function ejls_admin_init()
     if( isset ( $_POST['ejls-admin-menu']) && $_POST['ejls-admin-menu'] ){
         if( check_admin_referer('my-nonce-key', 'ejls-admin-menu')) {
             $e = new WP_Error();
-                update_option('context', trim($_POST['context']));
-                update_option('iri', trim($_POST['iri']));
+                update_option('context', ejls_check_context_arr());
         } else {
             update_option('context', '');
         }
         wp_safe_redirect(menu_page_url('ejls-admin-menu', false));    
     }
+}
+
+function ejls_check_context_arr()
+{
+    $contextArr = $_POST['context'];
+    foreach ($contextArr as $key => $value) {
+        if(array_filter($value)){
+            $context[] = array_filter($value);
+        }
+    }
+    if (!$context) {
+        $context[0] = array(
+            "type" =>"schema",
+            "iri"  =>"http://schema.org/"
+        );
+    }
+    return $context;
 }
 
 add_action('admin_notices', 'ejls_admin_notices');
