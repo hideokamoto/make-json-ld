@@ -11,29 +11,29 @@ Author: Hidetaka Okamoto
 Version: 1.2
 Author URI: http://wp-kyoto.net/
 */
-function ejls_get_archive ($max_no, $contextType) {
-    if (is_home()){
+function mkjsonld_get_archive ($max_no, $contextType, $cat = null) {
+    if(!$max_no){$max_no = -1;}
         $mainContents = array(
             'post_type' =>'post',
             'posts_per_page' => $max_no,
             'paged' => $paged
         );
+    if($cat){$mainContents[category_name] = $cat;}
         $the_query = new WP_Query( $mainContents );
         while ( $the_query->have_posts() ) : $the_query->the_post();
-            $content = ejls_get_content($contextType);
+            $content = mkjsonld_get_content($contextType);
             if(!$content){ continue; }
             $jsonld[] = $content;
         endwhile;
         $jsonld = json_encode($jsonld, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         return $jsonld;
-    }
 }
 
-function ejls_is_last ($the_query) {
+function mkjsonld_is_last ($the_query) {
     return ($the_query->current_post+1 === $the_query->post_count);
 }
 
-function ejls_get_content ($contextType) {
+function mkjsonld_get_content ($contextType) {
     $contextUrl = get_home_url() . "/jsonld-context/";
     $postUrl = get_permalink();
     $postId = get_the_ID();
@@ -66,35 +66,35 @@ function ejls_get_content ($contextType) {
     }
     return $json;
 }
-function ejls_get_article ($contextType) {
+function mkjsonld_get_article ($contextType) {
     if (is_page() || is_single()) {
         if (have_posts()) : while (have_posts()) : the_post();
-            $jsonld[] = ejls_get_content($contextType);
+            $jsonld[] = mkjsonld_get_content($contextType);
         endwhile; endif;
         rewind_posts();
         $jsonld = json_encode($jsonld, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         return $jsonld;
     }
 }
-register_activation_hook( __FILE__ , 'ejls_activation_callback');
-function ejls_activation_callback() {
-    add_rewrite_endpoint( 'json', EP_PERMALINK|EP_ROOT|EP_PAGES);
+register_activation_hook( __FILE__ , 'mkjsonld_activation_callback');
+function mkjsonld_activation_callback() {
+    add_rewrite_endpoint( 'json-ld', EP_PERMALINK|EP_ROOT|EP_PAGES|EP_CATEGORIES);
     add_rewrite_endpoint( 'jsonld-context', EP_ROOT );
     flush_rewrite_rules();
 }
 
-add_action( 'init', 'ejls_init');
-function ejls_init() {
-    add_rewrite_endpoint('json',EP_PERMALINK|EP_ROOT|EP_PAGES);
+add_action( 'init', 'mkjsonld_init');
+function mkjsonld_init() {
+    add_rewrite_endpoint('json-ld',EP_PERMALINK|EP_ROOT|EP_PAGES|EP_CATEGORIES);
     add_rewrite_endpoint('jsonld-context', EP_ROOT);
 }
 
-add_action('template_redirect', 'ejls_template_redirect');
-function ejls_template_redirect() {
+add_action('template_redirect', 'mkjsonld_template_redirect');
+function mkjsonld_template_redirect() {
     header("Access-Control-Allow-Origin: *");
     global $wp_query;
-    if( isset( $wp_query->query['json']) ) {
-        if( !$wp_query->query['json']){
+    if( isset( $wp_query->query['json-ld']) ) {
+        if( !$wp_query->query['json-ld']){
 
             if (get_option('context')) {
                 $contextData = get_option('context');
@@ -108,10 +108,14 @@ function ejls_template_redirect() {
 
             if (is_home()){
                 $max_no = $_GET['max'];
-                $jsonld = ejls_get_archive($max_no, $contextType);
+                $jsonld = mkjsonld_get_archive($max_no, $contextType);
             } elseif (is_single() || is_page()){
-                $jsonld = ejls_get_article($contextType);
-            }
+                $jsonld = mkjsonld_get_article($contextType);
+            } elseif (is_archive() ){
+        $cat = $wp_query->query_vars["category_name"];
+                $max_no = $_GET['max'];
+                $jsonld = mkjsonld_get_archive($max_no, $contextType, $cat);
+        }
             if ($jsonld == '[null]') {
                 $wp_query->set_404();
                 status_header(404);
@@ -130,7 +134,7 @@ function ejls_template_redirect() {
     if( isset($wp_query->query['jsonld-context'])) {
         if(!$wp_query->query['jsonld-context']) {
             header('Content-type: application/ld+json; charset=UTF-8');
-            $context = ejls_get_context();
+            $context = mkjsonld_get_context();
             echo $context;
             exit;
         } else {
@@ -140,7 +144,7 @@ function ejls_template_redirect() {
         }
     }
 }
-function ejls_get_context() {
+function mkjsonld_get_context() {
     $contextData;
     if (get_option('context')) {
         $contextData        = get_option('context');
@@ -170,18 +174,18 @@ function ejls_get_context() {
     return $context;
 }
 
-add_action( 'admin_menu', 'ejls_setting_menu' );
-function ejls_setting_menu(){
+add_action( 'admin_menu', 'mkjsonld_setting_menu' );
+function mkjsonld_setting_menu(){
     add_menu_page(
-        __('Make JSON-LD', 'ejls-admin-menu'),
-        __('Make JSON-LD', 'ejls-admin-menu'),
+        __('Make JSON-LD', 'mkjsonld-admin-menu'),
+        __('Make JSON-LD', 'mkjsonld-admin-menu'),
         'administrator',
-        'ejls-admin-menu',
-        'ejls_admin_menu'
+        'mkjsonld-admin-menu',
+        'mkjsonld_admin_menu'
     );
 }
 
-function ejls_admin_menu(){
+function mkjsonld_admin_menu(){
 ?>
 <div class="wrap">
     <h2>Make JSON-LD</h2>
@@ -189,7 +193,7 @@ function ejls_admin_menu(){
     <p>ここで使用する語彙を登録します。</p>
 
 <form method="post" action="" novalidate="novalidate">
-<?php wp_nonce_field( 'my-nonce-key', 'ejls-admin-menu');?>
+<?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-admin-menu');?>
 <table class="widefat form-table">
     <thead>
         <tr><th>　Vocabulary Name</th><th>URI</th></tr>
@@ -227,21 +231,21 @@ function ejls_admin_menu(){
 <?php
 }
 
-add_action( 'admin_init', 'ejls_admin_init');
-function ejls_admin_init()
+add_action( 'admin_init', 'mkjsonld_admin_init');
+function mkjsonld_admin_init()
 {
-    if( isset ( $_POST['ejls-admin-menu']) && $_POST['ejls-admin-menu'] ){
-        if( check_admin_referer('my-nonce-key', 'ejls-admin-menu')) {
+    if( isset ( $_POST['mkjsonld-admin-menu']) && $_POST['mkjsonld-admin-menu'] ){
+        if( check_admin_referer('my-nonce-key', 'mkjsonld-admin-menu')) {
             $e = new WP_Error();
-                update_option('context', ejls_check_context_arr());
+                update_option('context', mkjsonld_check_context_arr());
         } else {
             update_option('context', '');
         }
-        wp_safe_redirect(menu_page_url('ejls-admin-menu', false));    
+        wp_safe_redirect(menu_page_url('mkjsonld-admin-menu', false));    
     }
 }
 
-function ejls_check_context_arr()
+function mkjsonld_check_context_arr()
 {
     $contextArr = $_POST['context'];
     foreach ($contextArr as $key => $value) {
@@ -258,10 +262,10 @@ function ejls_check_context_arr()
     return $context;
 }
 
-add_action('admin_notices', 'ejls_admin_notices');
-function ejls_admin_notices(){
+add_action('admin_notices', 'mkjsonld_admin_notices');
+function mkjsonld_admin_notices(){
     ?>
-    <?php if($messages = get_transient('ejls-admin-errors')):?>
+    <?php if($messages = get_transient('mkjsonld-admin-errors')):?>
         <div class="updated">
             <ul>
                 <?php foreach( $messages as $message):?>
