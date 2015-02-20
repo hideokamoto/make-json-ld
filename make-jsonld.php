@@ -78,14 +78,14 @@ function mkjsonld_get_article ($contextType) {
 }
 register_activation_hook( __FILE__ , 'mkjsonld_activation_callback');
 function mkjsonld_activation_callback() {
-    add_rewrite_endpoint( 'json', EP_PERMALINK|EP_ROOT|EP_PAGES|EP_CATEGORIES);
+    add_rewrite_endpoint( 'json-ld', EP_PERMALINK|EP_ROOT|EP_PAGES|EP_CATEGORIES);
     add_rewrite_endpoint( 'jsonld-context', EP_ROOT );
     flush_rewrite_rules();
 }
 
 add_action( 'init', 'mkjsonld_init');
 function mkjsonld_init() {
-    add_rewrite_endpoint('json',EP_PERMALINK|EP_ROOT|EP_PAGES|EP_CATEGORIES);
+    add_rewrite_endpoint('json-ld',EP_PERMALINK|EP_ROOT|EP_PAGES|EP_CATEGORIES);
     add_rewrite_endpoint('jsonld-context', EP_ROOT);
 }
 
@@ -93,8 +93,8 @@ add_action('template_redirect', 'mkjsonld_template_redirect');
 function mkjsonld_template_redirect() {
     header("Access-Control-Allow-Origin: *");
     global $wp_query;
-    if( isset( $wp_query->query['json']) ) {
-        if( !$wp_query->query['json']){
+    if( isset( $wp_query->query['json-ld']) ) {
+        if( !$wp_query->query['json-ld']){
 
             if (get_option('context')) {
                 $contextData = get_option('context');
