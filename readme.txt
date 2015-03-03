@@ -1,4 +1,4 @@
-﻿=== Make JSON-LD for WordPress With Custom Fields ===
+=== Make JSON-LD for WordPress With Custom Fields ===
 Contributors: hideokamoto
 Donate link: https://note.mu/hideokamoto/n/nd0cecce0e758
 Tags: json-ld
