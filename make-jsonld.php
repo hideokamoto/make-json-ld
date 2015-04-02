@@ -61,12 +61,12 @@ function mkjsonld_template_redirect() {
                 $jsonld = $mkjsonld->get_archive($max_no, $contextType, $cat);
             }
 
-            if ($jsonld == '[null]') {
+            header('Content-type: application/ld+json; charset=UTF-8');
+            if (!isset($jsonld) || $jsonld == '[null]') {
                 $wp_query->set_404();
                 status_header(404);
-                return;
+                exit;
             } else {
-                header('Content-type: application/ld+json; charset=UTF-8');
                 echo $jsonld;
                 exit;
             }
@@ -77,15 +77,15 @@ function mkjsonld_template_redirect() {
         }
     }
     if( isset($wp_query->query['jsonld-context'])) {
+        header('Content-type: application/ld+json; charset=UTF-8');
         if(!$wp_query->query['jsonld-context']) {
-            header('Content-type: application/ld+json; charset=UTF-8');
             $context = $mkjsonld->get_context();
             echo $context;
             exit;
         } else {
             $wp_query->set_404();
             status_header(404);
-            return;
+            exit;
         }
     }
 }

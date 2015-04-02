@@ -14,6 +14,7 @@ class mkjsonldContent
                 if(!$content){ continue; }
                 $jsonld[] = $content;
             endwhile;
+            if(!isset($jsonld)){ return null;}
             $jsonld = json_encode($jsonld, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
             return $jsonld;
     }
@@ -64,7 +65,7 @@ class mkjsonldContent
     }
 
     function get_context() {
-        $contextData;
+        $contextData = [];
         if (get_option('context')) {
             $contextData = get_option('context');
         }
