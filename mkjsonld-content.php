@@ -3,10 +3,10 @@ class mkjsonldContent
 {
     function get_archive ($max_no, $contextType, $cat = null) {
         if(!$max_no){$max_no = -1;}
-            $mainContents = array(
-                'post_type' =>'post',
-                'posts_per_page' => $max_no
-            );
+        $mainContents = array(
+            'post_type' =>'post',
+            'posts_per_page' => $max_no
+          );
         if($cat){$mainContents[category_name] = $cat;}
             $the_query = new WP_Query( $mainContents );
             while ( $the_query->have_posts() ) : $the_query->the_post();
@@ -75,7 +75,7 @@ class mkjsonldContent
                     "schema" => "http://schema.org/"
                     );
                 break;
-            
+
             case 1:
                 $context['@context'] = esc_url($contextData[0]['iri']);
                 break;
