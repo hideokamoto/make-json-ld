@@ -36,40 +36,7 @@ function mkjsonld_template_redirect() {
     $mkjsonld = new mkjsonldContent;
     if( isset( $wp_query->query['json-ld']) ) {
         if( !$wp_query->query['json-ld']){
-            if (get_option('context')) {
-                $contextData = get_option('context');
-                //want to use array_column
-                foreach ($contextData as $key => $context) {
-                    $contextType[] = $context['type'];
-                }
-            } else {
-                $contextType[] = 'schema';
-            }
-
-            if (is_home()){
-                if (isset($_GET['max'])) {
-                    $max_no = $_GET['max'];
-                } else {
-                    $max_no = -1;
-                }
-                $jsonld = $mkjsonld->get_archive($max_no, $contextType);
-            } elseif (is_single() || is_page()){
-                $jsonld = $mkjsonld->get_article($contextType);
-            } elseif (is_archive() ){
-                $cat = $wp_query->query_vars["category_name"];
-                $max_no = $_GET['max'];
-                $jsonld = $mkjsonld->get_archive($max_no, $contextType, $cat);
-            }
-
-            header('Content-type: application/ld+json; charset=UTF-8');
-            if (!isset($jsonld) || $jsonld == '[null]') {
-                $wp_query->set_404();
-                status_header(404);
-                exit;
-            } else {
-                echo $jsonld;
-                exit;
-            }
+            mkjsonld_set_content($mkjsonld);
         } else {
             $wp_query->set_404();
             status_header(404);
@@ -77,15 +44,73 @@ function mkjsonld_template_redirect() {
         }
     }
     if( isset($wp_query->query['jsonld-context'])) {
-        header('Content-type: application/ld+json; charset=UTF-8');
-        if(!$wp_query->query['jsonld-context']) {
-            $context = $mkjsonld->get_context();
-            echo $context;
-            exit;
-        } else {
-            $wp_query->set_404();
-            status_header(404);
-            exit;
+        mkjsonld_context($mkjsonld);
+    }
+}
+
+function mkjsonld_set_content($mkjsonld){
+    $jsonld = mkjsonld_getJsonld($mkjsonld);
+
+    header('Content-type: application/ld+json; charset=UTF-8');
+    if (!isset($jsonld) || $jsonld == '[null]') {
+        global $wp_query;
+        $wp_query->set_404();
+        status_header(404);
+        exit;
+    } else {
+        echo $jsonld;
+        exit;
+    }
+}
+
+function mkjsonld_get_context_data(){
+    if (get_option('context')) {
+        $contextData = get_option('context');
+        //want to use array_column
+        foreach ($contextData as $key => $context) {
+            $contextType[] = $context['type'];
         }
+    } else {
+        $contextType[] = 'schema';
+    }
+    return $contextType;
+}
+
+function mkjsonld_getMaxNo(){
+    if (isset($_GET['max'])) {
+        $max_no = $_GET['max'];
+    } else {
+        $max_no = -1;
+    }
+    return $max_no;
+}
+
+function mkjsonld_getJsonld($mkjsonld){
+    global $wp_query;
+    $contextType = mkjsonld_get_context_data();
+    $max_no = mkjsonld_getMaxNo();
+    $cat = $wp_query->query_vars["category_name"];
+
+    if (is_home() || is_archive()){
+        $jsonld = $mkjsonld->get_archive($max_no, $contextType, $cat);
+    } elseif (is_single() || is_page()){
+        $jsonld = $mkjsonld->get_article($contextType);
+    } else {
+        return null;
+    }
+    return $jsonld;
+}
+
+function mkjsonld_context($mkjsonld){
+    header('Content-type: application/ld+json; charset=UTF-8');
+    global $wp_query;
+    if(!$wp_query->query['jsonld-context']) {
+        $context = $mkjsonld->get_context();
+        echo $context;
+        exit;
+    } else {
+        $wp_query->set_404();
+        status_header(404);
+        exit;
     }
 }
