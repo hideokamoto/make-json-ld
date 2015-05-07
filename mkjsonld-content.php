@@ -2,21 +2,20 @@
 class mkjsonldContent
 {
     function get_archive ($max_no, $contextType, $cat = null) {
-        if(!$max_no){$max_no = -1;}
         $mainContents = array(
             'post_type' =>'post',
             'posts_per_page' => $max_no
           );
         if($cat){$mainContents[category_name] = $cat;}
-            $the_query = new WP_Query( $mainContents );
-            while ( $the_query->have_posts() ) : $the_query->the_post();
-                $content = $this->get_content($contextType);
-                if(!$content){ continue; }
-                $jsonld[] = $content;
-            endwhile;
-            if(!isset($jsonld)){ return null;}
-            $jsonld = json_encode($jsonld, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
-            return $jsonld;
+        $the_query = new WP_Query( $mainContents );
+        while ( $the_query->have_posts() ) : $the_query->the_post();
+            $content = $this->get_content($contextType);
+            if(!$content){ continue; }
+            $jsonld[] = $content;
+        endwhile;
+        if(!isset($jsonld)){ return null;}
+        $jsonld = json_encode($jsonld, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        return $jsonld;
     }
 
     function get_content ($contextType) {

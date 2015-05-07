@@ -18,7 +18,6 @@ function mkjsonld_admin_menu(){
 <div class="wrap">
     <h2>Make JSON-LD</h2>
     <h3>Setting Vocabulary</h3>
-    <p>ここで使用する語彙を登録します。</p>
 
 <form method="post" action="" novalidate="novalidate">
 <?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-admin-menu');?>
@@ -53,7 +52,7 @@ function mkjsonld_admin_menu(){
         </tr>
     </tbody>
 </table>
-<p class="submit"><input type="submit" class="button button-primary" value="変更を保存"></p>
+<p class="submit"><input type="submit" class="button button-primary" value="Save Change"></p>
 </form>
 </div>
 <?php
@@ -68,7 +67,7 @@ function mkjsonld_admin_init()
         } else {
             update_option('context', '');
         }
-        wp_safe_redirect(menu_page_url('mkjsonld-admin-menu', false));    
+        wp_safe_redirect(menu_page_url('mkjsonld-admin-menu', false));
     }
 }
 

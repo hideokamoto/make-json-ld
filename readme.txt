@@ -2,13 +2,13 @@
 Contributors: hideokamoto
 Donate link: https://note.mu/hideokamoto/n/nd0cecce0e758
 Tags: json-ld
-Requires at least: 4.0-alpha
-Tested up to: 4.0-alpha
-Stable tag: 1.3
+Requires at least: 4.1.2
+Tested up to: 4.1.2
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Easy set JSON-ld data on your blog.
+Make JSON-LD from WordPress Custome Field data.
 
 == Description ==
 
@@ -36,6 +36,9 @@ Easy Customize "@Context", and easy select output Custom Fields Content.
 
 == Changelog ==
 
+= 1.4 =
+2015/05/06 Refactor for WordPress Plugin DIR.
+
 = 1.3 =
 2015/03/03 Code refactoring.
 
@@ -51,5 +54,5 @@ Easy Customize "@Context", and easy select output Custom Fields Content.
 
 == Upgrade Notice ==
 
-= 1.3 =
-Code refactoring
+= 1.4 =
+Refactor for WordPress Plugin DIR.

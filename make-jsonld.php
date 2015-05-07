@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Make JSON LD
- * @version 1.3
+ * @version 1.4
  */
 /*
 Plugin Name: Make JSON LD
 Plugin URI: http://hideokamoto.github.io/make-json-ld/
 Description: This Plugin can make JSON-LD for Linked Open Data.Using Advanced CustomField Plugin.
 Author: Hidetaka Okamoto
-Version: 1.3
+Version: 1.4
 Author URI: http://wp-kyoto.net/
 */
 require_once 'mkjsonld-admin.php';
