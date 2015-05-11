@@ -1,13 +1,8 @@
 <?php
 class mkjsonldContent
 {
-    function get_archive ($max_no, $contextType, $cat = null) {
-        $mainContents = array(
-            'post_type' =>'post',
-            'posts_per_page' => $max_no
-          );
-        if($cat){$mainContents[category_name] = $cat;}
-        $the_query = new WP_Query( $mainContents );
+    function get_archive ($contextType, $query) {
+        $the_query = new WP_Query( $query );
         while ( $the_query->have_posts() ) : $the_query->the_post();
             $content = $this->get_content($contextType);
             if(!$content){ continue; }
@@ -36,6 +31,7 @@ class mkjsonldContent
                 $matchedContext = array_merge($matchedContext, preg_grep("/^{$contexts}/", $customFieldKeys));
             }
         }
+
         if ($matchedContext) {
             foreach ($matchedContext as $k => $v) {
                 $content[$v] = $customFields[$v];

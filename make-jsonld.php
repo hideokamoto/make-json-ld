@@ -76,23 +76,29 @@ function mkjsonld_get_context_data(){
     return $contextType;
 }
 
-function mkjsonld_getMaxNo(){
-    if (isset($_GET['max'])) {
-        $max_no = $_GET['max'];
-    } else {
-        $max_no = -1;
-    }
-    return $max_no;
+function mkjsonld_getQuery($wp_query){
+  $query = array(
+      'post_type' =>'post',
+      'posts_per_page' => 10
+  );
+  if(isset($_GET['filter'])){
+      $query = $_GET['filter'];
+  }
+  if(!isset($query['posts_per_page'])){
+    $query['posts_per_page'] = -1;
+  }
+  $query['category_name'] = $wp_query->query_vars["category_name"];
+  return $query;
+
 }
 
 function mkjsonld_getJsonld($mkjsonld){
     global $wp_query;
     $contextType = mkjsonld_get_context_data();
-    $max_no = mkjsonld_getMaxNo();
-    $cat = $wp_query->query_vars["category_name"];
 
     if (is_home() || is_archive()){
-        $jsonld = $mkjsonld->get_archive($max_no, $contextType, $cat);
+        $query = mkjsonld_getQuery($wp_query);
+        $jsonld = $mkjsonld->get_archive($contextType, $query);
     } elseif (is_single() || is_page()){
         $jsonld = $mkjsonld->get_article($contextType);
     } else {
