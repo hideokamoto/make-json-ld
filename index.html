@@ -1,76 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <meta charset="UTF-8">
+    <title>Make JSON-LD for WordPress With Custom Fields v1.5 by hideokamoto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <title>WordPress Make JSON-LD Plugin by hideokamoto</title>
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
-    <header>
-      <div class="inner">
-        <h1>WordPress Make JSON-LD Plugin</h1>
-        <h2></h2>
-        <a href="https://github.com/hideokamoto/make-json-ld" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+    <section class="page-header">
+      <h1 class="project-name">Make JSON-LD for WordPress With Custom Fields v1.5</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/hideokamoto/make-json-ld" class="btn">View on GitHub</a>
+      <a href="https://github.com/hideokamoto/make-json-ld/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/hideokamoto/make-json-ld/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>
-<a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h1>
+    <section class="main-content">
+      <h1>
+<a id="このプラグインについて" class="anchor" href="#%E3%81%93%E3%81%AE%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" aria-hidden="true"><span class="octicon octicon-link"></span></a>このプラグインについて</h1>
 
 <p>カスタムフィールドのデータをJSON-LD形式で出力するプラグインです。</p>
 
 <p>カスタムフィールド名を「schema:name」のような形式にすることで、簡単にJSON-LD化されたデータをみることができます。</p>
 
 <h1>
-<a id="仕様" class="anchor" href="#%E4%BB%95%E6%A7%98" aria-hidden="true"><span class="octicon octicon-link"></span></a>仕様</h1>
+<a id="インストール方法" class="anchor" href="#%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%96%B9%E6%B3%95" aria-hidden="true"><span class="octicon octicon-link"></span></a>インストール方法</h1>
+
+<p>ZIPファイルをDLし、WordPressのプラグインとしてインストールさせてください。<br>
+有効化することでJSON-LDファイルを出力するようになります。</p>
+
+<h1>
+<a id="json-ldのファイルパス" class="anchor" href="#json-ld%E3%81%AE%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%91%E3%82%B9" aria-hidden="true"><span class="octicon octicon-link"></span></a>JSON-LDのファイルパス</h1>
 
 <ul>
-<li>管理画面から登録できる語彙は１つのみ</li>
-<li>語彙を登録した場合、その語彙しか使えない</li>
-<li>管理画面から登録された語彙が無い場合、デフォルトの語彙が出力される</li>
-<li>/jsonld-context/に表示されるURLがエンコードされて表示されるが動作に問題はない</li>
-<li>語彙１つだけの時は「:(CompactIRIs)」を使わずに定義する。<br>
+<li>http://[ドメイン]/json-ld/：全記事分のJSON-LD</li>
+<li>http://[ドメイン]/[カテゴリー名]/json-ld/：該当カテゴリ全記事分のJSON-LD</li>
+<li>http://[ドメイン]/[固定ページ・投稿パーマリンク]/json-ld/：該当記事のJSON-LD</li>
+</ul>
 
-<ul>
-<li>語彙１つの時→「 "name" : "YourName"」</li>
-<li>語彙複数の時→「"schema:name" : "YourName"」</li>
-</ul>
-</li>
-</ul>
+<h1>
+<a id="記事の絞り込み方法について" class="anchor" href="#%E8%A8%98%E4%BA%8B%E3%81%AE%E7%B5%9E%E3%82%8A%E8%BE%BC%E3%81%BF%E6%96%B9%E6%B3%95%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" aria-hidden="true"><span class="octicon octicon-link"></span></a>記事の絞り込み方法について</h1>
+
+<p>WP-APIに準拠した記事の絞込が行えます。</p>
+
+<p>例：/?filter[パラメータ１]=値&amp;filter[パラメータ２]=値</p>
 
 <h2>
-<a id="デフォルトで使用できる語彙" class="anchor" href="#%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E3%81%A7%E4%BD%BF%E7%94%A8%E3%81%A7%E3%81%8D%E3%82%8B%E8%AA%9E%E5%BD%99" aria-hidden="true"><span class="octicon octicon-link"></span></a>デフォルトで使用できる語彙</h2>
+<a id="利用可能なパラメータ" class="anchor" href="#%E5%88%A9%E7%94%A8%E5%8F%AF%E8%83%BD%E3%81%AA%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF" aria-hidden="true"><span class="octicon octicon-link"></span></a>利用可能なパラメータ</h2>
+
+<p>パラメータの詳細は<a href="http://wpdocs.osdn.jp/%E9%96%A2%E6%95%B0%E3%83%AA%E3%83%95%E3%82%A1%E3%83%AC%E3%83%B3%E3%82%B9/WP_Query">Codex</a>を参照してください。</p>
 
 <ul>
-<li>"rdf"    : "<a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#">http://www.w3.org/1999/02/22-rdf-syntax-ns#</a>",</li>
-<li>"rdfs"   : "<a href="http://www.w3.org/2000/01/rdf-schema#">http://www.w3.org/2000/01/rdf-schema#</a>",</li>
-<li>"vCard"  : "<a href="http://www.w3.org/2006/vcard/ns#">http://www.w3.org/2006/vcard/ns#</a>",</li>
-<li>"foaf"   : "<a href="http://xmlns.com/foaf/0.1/">http://xmlns.com/foaf/0.1/</a>",</li>
-<li>"dc"     : "<a href="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</a>",</li>
-<li>"dcterms": "<a href="http://purl.org/dc/terms/">http://purl.org/dc/terms/</a>",</li>
-<li>"cal"    : "<a href="http://www.w3.org/2002/12/cal/icaltzd#">http://www.w3.org/2002/12/cal/icaltzd#</a>",</li>
-<li>"geo"    : "<a href="http://www.w3.org/2003/01/geo/wgs84_pos#">http://www.w3.org/2003/01/geo/wgs84_pos#</a>",</li>
-<li>"owl"    : "ttp://www.w3.org/2002/07/owl#",</li>
-<li>"schema" : "<a href="http://schema.org/">http://schema.org/</a>",</li>
-<li>"skos"   : "<a href="http://www.w3.org/2004/02/skos/core#">http://www.w3.org/2004/02/skos/core#</a>",</li>
-<li>"yafjp"  : "<a href="http://fp.yafjp.org/terms/place#">http://fp.yafjp.org/terms/place#</a>"</li>
+<li>m</li>
+<li>p</li>
+<li>posts</li>
+<li>w</li>
+<li>cat</li>
+<li>withcomments</li>
+<li>withoutcomments</li>
+<li>s</li>
+<li>search</li>
+<li>exact</li>
+<li>sentence</li>
+<li>calendar</li>
+<li>page</li>
+<li>paged</li>
+<li>more</li>
+<li>tb</li>
+<li>pb</li>
+<li>author</li>
+<li>order</li>
+<li>orderby</li>
+<li>year</li>
+<li>monthnum</li>
+<li>day</li>
+<li>hour</li>
+<li>minute</li>
+<li>second</li>
+<li>name</li>
+<li>category_name</li>
+<li>tag</li>
+<li>feed</li>
+<li>author_name</li>
+<li>static</li>
+<li>pagename</li>
+<li>page_id</li>
+<li>error</li>
+<li>comments_popup</li>
+<li>attachment</li>
+<li>attachment_id</li>
+<li>subpost</li>
+<li>subpost_id</li>
+<li>preview</li>
+<li>robots</li>
+<li>taxonomy</li>
+<li>term</li>
+<li>cpage</li>
+<li>post_type</li>
+<li>posts_per_page</li>
 </ul>
 
-<p>*それぞれの語彙については(<a href="http://fp.yafjp.org/yokohama_art_lod/place_rdf)%5Bhttp://fp.yafjp.org/yokohama_art_lod/place_rdf%5D%E3%82%92%E5%8F%82%E7%85%A7%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82">http://fp.yafjp.org/yokohama_art_lod/place_rdf)[http://fp.yafjp.org/yokohama_art_lod/place_rdf]を参照してください。</a></p>
+<h1>
+<a id="使用可能な語彙" class="anchor" href="#%E4%BD%BF%E7%94%A8%E5%8F%AF%E8%83%BD%E3%81%AA%E8%AA%9E%E5%BD%99" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用可能な語彙</h1>
+
+<p>デフォルトでは「<a href="http://schema.org/">Schema.org</a>」のみ設定されています。</p>
+
+<p><a href="http://fp.yafjp.org/yokohama_art_lod/place_rdf">Yokohama Art Navi 場所LOD</a>などを参考にしてください。</p>
+
+<h1>
+<a id="使用するには" class="anchor" href="#%E4%BD%BF%E7%94%A8%E3%81%99%E3%82%8B%E3%81%AB%E3%81%AF" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用するには</h1>
+
+<p>カスタムフィールドのフィールド名を「語彙:タイプ」に設定してください。</p>
+
+<p>例：schemaのnameを使う-&gt;フィールド名「schema:name」</p>
+
+<h1>
+<a id="ライセンス" class="anchor" href="#%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9" aria-hidden="true"><span class="octicon octicon-link"></span></a>ライセンス</h1>
+
+<p>GPLです。<br>
+LICENSE.mdをご覧ください。</p>
+
+<h1>
+<a id="updatelog" class="anchor" href="#updatelog" aria-hidden="true"><span class="octicon octicon-link"></span></a>UpdateLog</h1>
+
+<ul>
+<li>1.5 WP_Queryのparamに対応</li>
+</ul>
 
 <h1>
 <a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h1>
@@ -80,22 +138,9 @@
 <p>修正パッチを送っていただけると作者は非常に喜びます。</p>
 
 <h1>
-<a id="update-memo" class="anchor" href="#update-memo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update Memo</h1>
-
-<h2>
-<a id="20150117" class="anchor" href="#20150117" aria-hidden="true"><span class="octicon octicon-link"></span></a>2015/01/17</h2>
-
-<ul>
-<li>管理画面に語彙登録画面を追加</li>
-<li>語彙の保存処理を実装</li>
-<li>語彙をcontextファイルに反映</li>
-</ul>
-
-<h1>
 <a id="ぼやき" class="anchor" href="#%E3%81%BC%E3%82%84%E3%81%8D" aria-hidden="true"><span class="octicon octicon-link"></span></a>ぼやき</h1>
 
 <ul>
-<li>語彙１つしか登録できないとかありえない</li>
 <li>そろそろ使い方をまとめないとわかりにくい</li>
 <li>AdvanceCustomField依存なのを明示したい</li>
 </ul>
@@ -104,30 +149,20 @@
 <a id="今後" class="anchor" href="#%E4%BB%8A%E5%BE%8C" aria-hidden="true"><span class="octicon octicon-link"></span></a>今後</h1>
 
 <ul>
-<li>語彙を複数登録できるようにする</li>
 <li>
 <a href="https://github.com/type" class="user-mention">@type</a>をサポート</li>
 <li>派生系でGoogleの構造化データ（schema.org）をサポートしたい</li>
 </ul>
-        </section>
 
-        <aside id="sidebar">
-          <a href="https://github.com/hideokamoto/make-json-ld/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/hideokamoto/make-json-ld/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/hideokamoto/make-json-ld">Make JSON-LD for WordPress With Custom Fields v1.5</a> is maintained by <a href="https://github.com/hideokamoto">hideokamoto</a>.</span>
 
-          <p class="repo-owner"><a href="https://github.com/hideokamoto/make-json-ld"></a> is maintained by <a href="https://github.com/hideokamoto">hideokamoto</a>.</p>
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
 
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
-    </div>
+    </section>
 
   
   </body>
 </html>
+
