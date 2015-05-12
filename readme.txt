@@ -23,9 +23,11 @@ Easy Customize "@Context", and easy select output Custom Fields Content.
 
 == Frequently Asked Questions ==
 
-=   =
+= How to get Custome Post Data  =
 
+Use WP_Query's parameter.
 
+see there -> http://codex.wordpress.org/Class_Reference/WP_Query
 
 
 == Screenshots ==
@@ -35,6 +37,9 @@ Easy Customize "@Context", and easy select output Custom Fields Content.
 
 
 == Changelog ==
+
+= 1.5 =
+2015/05/11 Support WP_Query's param.
 
 = 1.4 =
 2015/05/06 Refactor for WordPress Plugin DIR.
