@@ -1,10 +1,9 @@
 <?php
 
-class SampleTest extends WP_UnitTestCase {
+class GetJsonldTest extends WP_UnitTestCase {
 
-	function testSample() {
+	function testGetJsonLd() {
 		// replace this with some actual testing code
 		$this->assertTrue( true );
 	}
 }
-
