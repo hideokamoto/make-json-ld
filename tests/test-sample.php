@@ -1,9 +1,15 @@
 <?php
+class CanGetJsonld extends WP_UnitTestCase {
+const ROOT_ADDRESS = "http://wordpress.local/";
 
-class GetJsonldTest extends WP_UnitTestCase {
+	function testRootAddress() {
+		//Can Get ROOT JSON-LD ?
+		$root = wp_remote_get( self::ROOT_ADDRESS . 'json-ld');
+		$this->assertEquals( $root['response']['code'], 200 );
+	}
 
-	function testGetJsonLd() {
-		// replace this with some actual testing code
-		$this->assertTrue( true );
+	function testContextAddress(){
+		$context = wp_remote_get( self::ROOT_ADDRESS . 'jsonld-context');
+		$this->assertEquals( $context['response']['code'], 200 );
 	}
 }

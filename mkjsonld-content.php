@@ -60,7 +60,7 @@ class mkjsonldContent
     }
 
     function get_context() {
-        $contextData = [];
+        $contextData = array();
         if (get_option('context')) {
             $contextData = get_option('context');
         }
