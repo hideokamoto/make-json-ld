@@ -4,19 +4,18 @@ const ROOT_ADDRESS = "http://wordpress.local/";
 
 	function testRoot(){
 		var_dump($_SERVER['HTTP_HOST']);
-		var_dump(dirname( __DIR__ ));
-		var_dump($_SERVER);
+		var_dump($_SERVER['HOSTNAME']);
 		$this->assertEquals( 200, 200 );
 	}
 
 	function testRootAddress() {
 		//Can Get ROOT JSON-LD ?
-		$root = wp_remote_get( self::ROOT_ADDRESS . 'json-ld');
+		$root = wp_remote_get( 'http://'. $_SERVER['HOSTNAME'] . '/json-ld');
 		$this->assertEquals( $root['response']['code'], 200 );
 	}
 
 	function testContextAddress(){
-		$context = wp_remote_get( self::ROOT_ADDRESS . 'jsonld-context');
+		$context = wp_remote_get( 'http://'.$_SERVER['HOSTNAME'] . '/jsonld-context');
 		$this->assertEquals( $context['response']['code'], 200 );
 	}
 
