@@ -87,7 +87,9 @@ function mkjsonld_getQuery($wp_query){
   if(!isset($query['posts_per_page'])){
     $query['posts_per_page'] = -1;
   }
-  $query['category_name'] = $wp_query->query_vars["category_name"];
+  if(isset($wp_query->query_vars["category_name"])){
+    $query['category_name'] = $wp_query->query_vars["category_name"];
+  }
   return $query;
 
 }
