@@ -1,25 +1,25 @@
 <?php
 class CanGetJsonld extends WP_UnitTestCase {
-const ROOT_ADDRESS = "http://wordpress.local/";
 
-	function testRoot(){
-		var_dump($_SERVER['HTTP_HOST']);
-		var_dump($_SERVER['HOSTNAME']);
-		$this->assertEquals( 200, 200 );
+	function testUrlResponse(){
+		if($_SERVER['HOSTNAME'] == 'wordpress.local'){
+			$this->checkRootAddress();
+			$this->checkContextAddress();
+		}
 	}
 
-	function testRootAddress() {
+	function checkRootAddress() {
 		//Can Get ROOT JSON-LD ?
 		$root = wp_remote_get( 'http://'. $_SERVER['HOSTNAME'] . '/json-ld');
 		$this->assertEquals( $root['response']['code'], 200 );
 	}
 
-	function testContextAddress(){
+	function checkContextAddress(){
 		$context = wp_remote_get( 'http://'.$_SERVER['HOSTNAME'] . '/jsonld-context');
 		$this->assertEquals( $context['response']['code'], 200 );
 	}
 
-	function testAAA(){
+	function testGetJsonldContent(){
 		global $wp_query;
 		$wp_query->is_home = true;
 		require_once 'mkjsonld-content.php';
