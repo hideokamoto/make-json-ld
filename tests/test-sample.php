@@ -2,7 +2,7 @@
 class CanGetJsonld extends WP_UnitTestCase {
 
 	function testUrlResponse(){
-		if($_SERVER['HOSTNAME'] == 'wordpress.local'){
+		if(isset($_SERVER['HOSTNAME'])){
 			$this->checkRootAddress();
 			$this->checkContextAddress();
 		}
