@@ -1,6 +1,6 @@
 <?php
-add_action( 'admin_menu', 'mkjsonld_setting_menu' );
-add_action( 'admin_init', 'mkjsonld_admin_init');
+add_action(   'admin_menu', 'mkjsonld_setting_menu' );
+add_action(   'admin_init', 'mkjsonld_admin_init');
 add_action('admin_notices', 'mkjsonld_admin_notices');
 
 function mkjsonld_setting_menu(){
@@ -79,6 +79,7 @@ function mkjsonld_check_context_arr()
             $context[] = array_filter($value);
         }
     }
+
     if (!$context) {
         $context[0] = array(
             "type" =>"schema",

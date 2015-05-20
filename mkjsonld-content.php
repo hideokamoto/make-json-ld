@@ -65,6 +65,14 @@ class mkjsonldContent
             $contextData = get_option('context');
         }
 
+        $context = $this->get_context_data($contextData);
+        $context = json_encode($context, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        return $context;
+    }
+
+    function get_context_data($contextData){
+
+
         switch (count($contextData)) {
             case 0:
                 $context['@context'] = array(
@@ -85,7 +93,6 @@ class mkjsonldContent
                 $context["@context"] = $contextArray;
                 break;
         }
-        $context = json_encode($context, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         return $context;
     }
 }

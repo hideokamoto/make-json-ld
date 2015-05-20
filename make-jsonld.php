@@ -99,7 +99,7 @@ function mkjsonld_getJsonld($mkjsonld){
     $contextType = mkjsonld_get_context_data();
 
     if (is_home() || is_archive()){
-        $query = mkjsonld_getQuery($wp_query);
+        $query  = mkjsonld_getQuery($wp_query);
         $jsonld = $mkjsonld->get_archive($contextType, $query);
     } elseif (is_single() || is_page()){
         $jsonld = $mkjsonld->get_article($contextType);
