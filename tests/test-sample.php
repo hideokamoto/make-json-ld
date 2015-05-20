@@ -26,12 +26,6 @@ class CanGetJsonld extends WP_UnitTestCase {
 		$this->assertEquals( $context['response']['code'], 200 );
 	}
 
-	function testGetJsonldContent(){
-		global $wp_query;
-		$wp_query->is_home = true;
-		//$this->assertTrue(true);
-	}
-
 	function testGetJsonldDefaultContext(){
 		$contextData = null;
 		$defaultContextData =$this->mkjsonld->get_context_data($contextData);
@@ -58,7 +52,7 @@ class CanGetJsonld extends WP_UnitTestCase {
 			"type" => "test",
 			"iri"  => "http://example.com/"
 		);
-		$manyContextData =$this->mkjsonld->get_context_data($contextData);
+		$manyContextData = $this->mkjsonld->get_context_data($contextData);
 		$this->assertTrue(is_array($manyContextData));
 		$this->assertEquals($manyContextData["@context"][0], array(
 				"schema"  => "http://schema.org/"
@@ -66,5 +60,11 @@ class CanGetJsonld extends WP_UnitTestCase {
 		$this->assertEquals($manyContextData["@context"][1],array(
 				"test"  => "http://example.com/"
 		));
+	}
+
+	function testGetJsonldContext(){
+		$jsonld_context = $this->mkjsonld->get_context();
+		$context = json_decode($jsonld_context);
+		$this->assertTrue(is_object($context));
 	}
 }
