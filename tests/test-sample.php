@@ -67,4 +67,13 @@ class CanGetJsonld extends WP_UnitTestCase {
 		$context = json_decode($jsonld_context);
 		$this->assertTrue(is_object($context));
 	}
+
+	function testGetDefaultWpQuery(){
+		global $wp_query;
+		$query = mkjsonld_getQuery($wp_query);
+		$this->assertEquals($query,array(
+			"post_type" => "post",
+			"posts_per_page" => 10
+		));
+	}
 }

@@ -70,9 +70,8 @@ class mkjsonldContent
         return $context;
     }
 
+    //Tested
     function get_context_data($contextData){
-
-
         switch (count($contextData)) {
             case 0:
                 $context['@context'] = array(
