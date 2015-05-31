@@ -3,7 +3,6 @@ require_once 'mkjsonld-content.php';
 class CanGetJsonld extends WP_UnitTestCase {
 
 	private $mkjsonld;
-
 	function __construct(){
 		$this->mkjsonld = new mkjsonldContent;
 	}

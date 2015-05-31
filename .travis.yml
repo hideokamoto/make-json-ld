@@ -4,6 +4,7 @@ php:
     - 5.3
     - 5.4
     - hhvm
+    - 7.0
 
 env:
     - WP_VERSION=latest WP_MULTISITE=0
