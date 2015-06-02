@@ -5,8 +5,8 @@ add_action('admin_notices', 'mkjsonld_admin_notices');
 
 function mkjsonld_setting_menu(){
     add_menu_page(
-        __('Make JSON-LD', 'mkjsonld-admin-menu'),
-        __('Make JSON-LD', 'mkjsonld-admin-menu'),
+        __('Make JSON-LD', 'make_json_ld'),
+        __('Make JSON-LD', 'make_json_ld'),
         'administrator',
         'mkjsonld-admin-menu',
         'mkjsonld_admin_menu'
@@ -16,14 +16,14 @@ function mkjsonld_setting_menu(){
 function mkjsonld_admin_menu(){
 ?>
 <div class="wrap">
-    <h2>Make JSON-LD</h2>
-    <h3>Setting Vocabulary</h3>
+    <h2><?php printf(__('Make JSON-LD','make_json_ld'));?></h2>
+    <h3><?php printf(__('Setting Vocabulary','make_json_ld'));?></h3>
 
 <form method="post" action="" novalidate="novalidate">
 <?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-admin-menu');?>
 <table class="widefat form-table">
     <thead>
-        <tr><th>　Vocabulary Name</th><th>URI</th></tr>
+        <tr><th>　<?php printf(__('Vocabulary Name','make_json_ld'));?></th><th>URI</th></tr>
     </thead>
     <tbody>
         <?php
@@ -52,7 +52,11 @@ function mkjsonld_admin_menu(){
         </tr>
     </tbody>
 </table>
-<p class="submit"><input type="submit" class="button button-primary" value="Save Change"></p>
+<p class="submit">
+  <input type="submit"
+    class="button button-primary"
+    value="<?php printf(__('Save Change','make_json_ld'));?>">
+</p>
 </form>
 </div>
 <?php

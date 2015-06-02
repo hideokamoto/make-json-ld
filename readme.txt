@@ -38,6 +38,9 @@ see there -> http://codex.wordpress.org/Class_Reference/WP_Query
 
 == Changelog ==
 
+= 1.6 =
+2015/06/02 Translate Ready.
+
 = 1.5 =
 2015/05/11 Support WP_Query's param.
 
