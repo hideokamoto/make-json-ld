@@ -3,10 +3,16 @@
   ?>
   <div class="wrap">
       <h2><?php printf(__('Make JSON-LD','make_json_ld'));?></h2>
-      <h3><?php printf(__('Setting Vocabulary','make_json_ld'));?></h3>
+      <h3><?php printf(__('Mapping Schema to CustomField','make_json_ld'));?></h3>
 
       <form method="post" action="" novalidate="novalidate">
-          <?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-admin-menu');?>
+          <?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-mapping');?>
+          <?php
+          $customeFields = get_alloptions();
+          echo "<pre>";
+          var_dump($customeFields);
+          echo "</pre>";
+           ?>
           <table class="widefat form-table">
               <thead>
                   <tr><th>　<?php printf(__('Vocabulary Name','make_json_ld'));?></th><th>URI</th></tr>
