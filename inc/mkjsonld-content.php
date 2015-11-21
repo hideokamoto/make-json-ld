@@ -1,5 +1,5 @@
 <?php
-class mkjsonldContent
+class odgContent
 {
     function get_archive ($contextType, $query) {
         $the_query = new WP_Query( $query );
@@ -61,8 +61,8 @@ class mkjsonldContent
 
     function get_context() {
         $contextData = array();
-        if (get_option('context')) {
-            $contextData = get_option('context');
+        if (get_option('odg-context')) {
+            $contextData = get_option('odg-context');
         }
 
         $context = $this->get_context_data($contextData);

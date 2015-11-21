@@ -1,19 +1,19 @@
 <?php
-  function mkjsonld_mapping() {
+  function odg_mapping() {
   ?>
   <div class="wrap">
       <h2><?php printf(__('Make JSON-LD','make_json_ld'));?></h2>
       <h3><?php printf(__('Mapping Schema to CustomField','make_json_ld'));?></h3>
 
       <form method="post" action="" novalidate="novalidate">
-          <?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-mapping');?>
+          <?php wp_nonce_field( 'my-nonce-key', 'odg-mapping');?>
           <table class="widefat form-table">
               <thead>
                   <tr><th>　<?php printf(__('Vocabulary Name','make_json_ld'));?></th><th>URI</th></tr>
               </thead>
               <tbody>
                   <?php
-                  $contextArr = get_option('context');
+                  $contextArr = get_option('odg-context');
                   $i = 0;
                   if (!$contextArr) :
                       $contextArr[0] = array(

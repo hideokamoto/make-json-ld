@@ -1,4 +1,4 @@
-Make JSON-LD for WordPress With Custom Fields v1.5
+OpenData Generator v2.0alpha
 ============
 
 #このプラグインについて
@@ -86,4 +86,5 @@ GPLです。
 LICENSE.mdをご覧ください。
 
 #UpdateLog
+- 2.0 リメイク（v1との後方互換性なし）
 - 1.5 WP_Queryのparamに対応

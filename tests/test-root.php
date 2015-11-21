@@ -2,9 +2,9 @@
 require_once 'mkjsonld-content.php';
 class CanGetJsonld extends WP_UnitTestCase {
 
-	private $mkjsonld;
+	private $odg;
 	function __construct(){
-		$this->mkjsonld = new mkjsonldContent;
+		$this->odg = new odgContent;
 	}
 
 	function testUrlResponse(){
@@ -27,7 +27,7 @@ class CanGetJsonld extends WP_UnitTestCase {
 
 	function testGetJsonldDefaultContext(){
 		$contextData = null;
-		$defaultContextData =$this->mkjsonld->get_context_data($contextData);
+		$defaultContextData =$this->odg->get_context_data($contextData);
 		$this->assertTrue(is_array($defaultContextData));
 		$this->assertEquals($defaultContextData["@context"], array("schema"=>"http://schema.org/"));
 	}
@@ -37,7 +37,7 @@ class CanGetJsonld extends WP_UnitTestCase {
 			"type" => "schema",
 			"iri"  => "http://schema.org/"
 		);
-		$singleContextData =$this->mkjsonld->get_context_data($contextData);
+		$singleContextData =$this->odg->get_context_data($contextData);
 		$this->assertTrue(is_array($singleContextData));
 		$this->assertEquals($singleContextData["@context"], "http://schema.org/");
 	}
@@ -51,7 +51,7 @@ class CanGetJsonld extends WP_UnitTestCase {
 			"type" => "test",
 			"iri"  => "http://example.com/"
 		);
-		$manyContextData = $this->mkjsonld->get_context_data($contextData);
+		$manyContextData = $this->odg->get_context_data($contextData);
 		$this->assertTrue(is_array($manyContextData));
 		$this->assertEquals($manyContextData["@context"][0], array(
 				"schema"  => "http://schema.org/"
@@ -62,14 +62,14 @@ class CanGetJsonld extends WP_UnitTestCase {
 	}
 
 	function testGetJsonldContext(){
-		$jsonld_context = $this->mkjsonld->get_context();
+		$jsonld_context = $this->odg->get_context();
 		$context = json_decode($jsonld_context);
 		$this->assertTrue(is_object($context));
 	}
 
 	function testGetDefaultWpQuery(){
 		global $wp_query;
-		$query = mkjsonld_getQuery($wp_query);
+		$query = odg_getQuery($wp_query);
 		$this->assertEquals($query,array(
 			"post_type" => "post",
 			"posts_per_page" => 10

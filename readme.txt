@@ -1,14 +1,14 @@
-=== Make JSON-LD for WordPress With Custom Fields ===
+=== OpenData Generator ===
 Contributors: hideokamoto
 Donate link: https://note.mu/hideokamoto/n/nd0cecce0e758
-Tags: json-ld
+Tags: json-ld,opendata
 Requires at least: 4.1.2
-Tested up to: 4.1.2
-Stable tag: 1.5
+Tested up to: 4.3.2
+Stable tag: 2.0alpha
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Make JSON-LD from WordPress Custome Field data.
+Easy Make OpenData from WordPress CustomFields.
 
 == Description ==
 
@@ -37,6 +37,9 @@ see there -> http://codex.wordpress.org/Class_Reference/WP_Query
 
 
 == Changelog ==
+
+= 2.0alpha =
+2015/11/21 Remake.
 
 = 1.6 =
 2015/06/02 Translate Ready.

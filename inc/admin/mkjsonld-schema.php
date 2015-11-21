@@ -1,19 +1,19 @@
 <?php
-function mkjsonld_schema(){
+function odg_schema(){
 ?>
 <div class="wrap">
     <h2><?php printf(__('Make JSON-LD','make_json_ld'));?></h2>
     <h3><?php printf(__('Setting Vocabulary','make_json_ld'));?></h3>
 
     <form method="post" action="" novalidate="novalidate">
-        <?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-schema');?>
+        <?php wp_nonce_field( 'my-nonce-key', 'odg-schema');?>
         <table class="widefat form-table">
             <thead>
                 <tr><th>　<?php printf(__('Vocabulary Name','make_json_ld'));?></th><th>URI</th></tr>
             </thead>
             <tbody>
                 <?php
-                $contextArr = get_option('context');
+                $contextArr = get_option('odg-context');
                 $i = 0;
                 if (!$contextArr) :
                     $contextArr[0] = array(

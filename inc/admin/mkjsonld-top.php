@@ -1,4 +1,4 @@
 <?php
-function mkjsonld_admin_menu(){
+function odg_admin_menu(){
   echo "<p>hoge</p>";
 }
