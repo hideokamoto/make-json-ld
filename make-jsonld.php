@@ -11,8 +11,8 @@ Author: Hidetaka Okamoto
 Version: 1.5
 Author URI: http://wp-kyoto.net/
 */
-require_once 'mkjsonld-admin.php';
-require_once 'mkjsonld-content.php';
+require_once 'inc/admin/mkjsonld-admin.php';
+require_once 'inc/mkjsonld-content.php';
 
 register_activation_hook( __FILE__ , 'mkjsonld_activation_callback');
 add_action( 'init', 'mkjsonld_init');
