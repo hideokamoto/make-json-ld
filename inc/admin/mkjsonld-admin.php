@@ -34,14 +34,14 @@ function mkjsonld_setting_menu(){
 
 function mkjsonld_admin_init()
 {
-    if( isset ( $_POST['mkjsonld-admin-menu']) && $_POST['mkjsonld-admin-menu'] ){
-        if( check_admin_referer('my-nonce-key', 'mkjsonld-admin-menu')) {
+    if( isset ( $_POST['mkjsonld-schema']) && $_POST['mkjsonld-schema'] ){
+        if( check_admin_referer('my-nonce-key', 'mkjsonld-schema')) {
             $e = new WP_Error();
                 update_option('context', mkjsonld_check_context_arr());
         } else {
             update_option('context', '');
         }
-        wp_safe_redirect(menu_page_url('mkjsonld-admin-menu', false));
+        wp_safe_redirect(menu_page_url('mkjsonld-schema', false));
     }
 }
 

@@ -6,7 +6,7 @@ function mkjsonld_schema(){
     <h3><?php printf(__('Setting Vocabulary','make_json_ld'));?></h3>
 
     <form method="post" action="" novalidate="novalidate">
-        <?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-admin-menu');?>
+        <?php wp_nonce_field( 'my-nonce-key', 'mkjsonld-schema');?>
         <table class="widefat form-table">
             <thead>
                 <tr><th>　<?php printf(__('Vocabulary Name','make_json_ld'));?></th><th>URI</th></tr>
